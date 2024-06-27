@@ -12,27 +12,30 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+
             WelcomeMessage();
-           PlayerInfoModel activePlayer = CreatePlayer("Player 1");
-           PlayerInfoModel opponent = CreatePlayer("Player 2");
-           PlayerInfoModel winner = null;
-           // DisplayShotGrid(activePlayer);
+            PlayerInfoModel activePlayer = CreatePlayer("Player 1");
+            PlayerInfoModel opponent = CreatePlayer("Player 2");
+            PlayerInfoModel winner = null;
+           
             do
             {
-               // Clear();
                 DisplayShotGrid(activePlayer);
                 Console.WriteLine();
-             
+
                 RecordPlayerShot(activePlayer, opponent);
                 bool doesGameContinue = GameLogic.PlayerStillActive(opponent);
-               
+
 
                 if (doesGameContinue == true)
                 {
-                   // swap positions
+                    // swap positions
                     (activePlayer, opponent) = (opponent, activePlayer);
 
-                } else
+                }
+                else
                 {
                     winner = activePlayer;
                 }
@@ -58,11 +61,12 @@ namespace ConsoleUI
             do
             {
                 string shot = PromptUser($"{activePlayer.UsersName}, please enter your shot selection: ");
-               try
+                try
                 {
                     (row, column) = GameLogic.SplitShotIntoRowAndColumn(shot);
                     isValidShot = GameLogic.ValidateShot(activePlayer, row, column);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     isValidShot = false;
                     //Console.WriteLine("Error: " + ex.Message);
@@ -72,7 +76,7 @@ namespace ConsoleUI
                 {
                     Console.WriteLine("Invalid Shot Location. Please try again.");
                 }
-            } while( isValidShot == false );
+            } while (isValidShot == false);
 
             bool isAHit = GameLogic.IdentifyShotResults(opponent, row, column);
             GameLogic.MarkShotResult(activePlayer, row, column, isAHit);
@@ -86,7 +90,8 @@ namespace ConsoleUI
             if (isAHit)
             {
                 Console.WriteLine($"{row}{column} is a Hit!");
-            } else
+            }
+            else
             {
                 Console.WriteLine($"{row}{column} is a miss.");
             }
@@ -96,7 +101,67 @@ namespace ConsoleUI
         private static void DisplayShotGrid(PlayerInfoModel activePlayer)
         {
             string currentRow = activePlayer.ShotGrid[0].SpotLetter;
-           foreach (var gridSpot in activePlayer.ShotGrid)
+
+            PrintFirstRow();
+
+            foreach (var gridSpot in activePlayer.ShotGrid)
+            {
+                if (gridSpot.SpotLetter != currentRow)
+                {
+                    Console.WriteLine();
+                    currentRow = gridSpot.SpotLetter;
+
+                }
+                if (gridSpot.SpotNumber == 1)
+                {
+                    Console.Write($" {gridSpot.SpotLetter} ");
+                }
+
+
+                switch (gridSpot.Status)
+                {
+                    case GridSpotStatus.Empty:
+                        Console.Write(" o ");
+                        break;
+                    case GridSpotStatus.Hit:
+                        Console.Write(" x ");
+                        break;
+                    case GridSpotStatus.Miss:
+                        Console.Write(" m ");
+                        break;
+                    default:
+                        Console.Write(" ? ");
+                        break;
+
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+
+        }
+
+        private static void PrintFirstRow()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (i == 0)
+                {
+                    Console.Write(" + ");
+
+                }
+                else
+                {
+                    Console.Write($" {i} ");
+                }
+            }
+
+            Console.WriteLine();
+        }
+        private static void DisplayShotGridOld(PlayerInfoModel activePlayer)
+        {
+            string currentRow = activePlayer.ShotGrid[0].SpotLetter;
+
+            foreach (var gridSpot in activePlayer.ShotGrid)
             {
                 if (gridSpot.SpotLetter != currentRow)
                 {
@@ -109,18 +174,21 @@ namespace ConsoleUI
                 if (gridSpot.Status == GridSpotStatus.Empty)
                 {
                     Console.Write($" {gridSpot.SpotLetter}{gridSpot.SpotNumber} ");
-                } else if (gridSpot.Status == GridSpotStatus.Hit)
+                }
+                else if (gridSpot.Status == GridSpotStatus.Hit)
                 {
                     Console.Write(" X  ");
-                } else if (gridSpot.Status == GridSpotStatus.Miss)
+                }
+                else if (gridSpot.Status == GridSpotStatus.Miss)
                 {
                     Console.Write(" O  ");
-                } else
+                }
+                else
                 {
                     Console.Write(" ?  ");
                 }
-           }
-            Console.WriteLine(); 
+            }
+            Console.WriteLine();
             Console.WriteLine();
         }
 
@@ -141,10 +209,10 @@ namespace ConsoleUI
             GameLogic.InitializeGrid(output);
 
             PlaceShips(output);
-          
+
 
             Clear();
-            
+
             return output;
         }
 
@@ -153,18 +221,19 @@ namespace ConsoleUI
             do
             {
                 // Console.Write("Where do you want to place your next ship: ");
-             string shipLocation = PromptUser($"Where do you want to place ship number {model.ShipLocations.Count + 1}: ");
-             bool isValidLocation = false;
+                string shipLocation = PromptUser($"Where do you want to place ship number {model.ShipLocations.Count + 1}: ");
+                bool isValidLocation = false;
 
                 try
                 {
                     isValidLocation = GameLogic.PlaceShip(model, shipLocation);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine("Error: " + ex.Message);
                 }
 
-            if (isValidLocation == false)
+                if (isValidLocation == false)
                 {
                     Console.WriteLine("That was not a valid location. Please try again.");
                 }
@@ -180,7 +249,7 @@ namespace ConsoleUI
         private static void Clear()
         {
             Console.Clear();
-        } 
+        }
 
         private static string PromptUser(string message)
         {
