@@ -12,14 +12,37 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            bool restart = true;
+
+            while (restart)
+            {
+                RunGame();
+                Console.WriteLine();
+                string shouldRestart = PromptUser("Do you want to restart the game (yes/no): ");
+
+                if (shouldRestart == "yes".ToLower())
+                {
+                    Clear();
+                }
+                else
+                {
+                    restart = false;
+                }
+
+            }
 
 
+
+        }
+
+        private static void RunGame()
+        {
             WelcomeMessage();
             PlayerInfoModel activePlayer = CreatePlayer("Player 1");
             PlayerInfoModel opponent = CreatePlayer("Player 2");
             PlayerInfoModel winner = null;
-           
+
             do
             {
                 DisplayShotGrid(activePlayer);
@@ -44,7 +67,7 @@ namespace ConsoleUI
 
             IdentifyWinner(winner);
 
-            Console.ReadLine();
+           // Console.ReadLine();
         }
 
         private static void IdentifyWinner(PlayerInfoModel winner)
@@ -124,10 +147,10 @@ namespace ConsoleUI
                         Console.Write(" o ");
                         break;
                     case GridSpotStatus.Hit:
-                        Console.Write(" x ");
+                        Console.Write(" X ");
                         break;
                     case GridSpotStatus.Miss:
-                        Console.Write(" m ");
+                        Console.Write(" M ");
                         break;
                     default:
                         Console.Write(" ? ");
@@ -157,46 +180,26 @@ namespace ConsoleUI
 
             Console.WriteLine();
         }
-        private static void DisplayShotGridOld(PlayerInfoModel activePlayer)
-        {
-            string currentRow = activePlayer.ShotGrid[0].SpotLetter;
-
-            foreach (var gridSpot in activePlayer.ShotGrid)
-            {
-                if (gridSpot.SpotLetter != currentRow)
-                {
-                    Console.WriteLine();
-                    currentRow = gridSpot.SpotLetter;
-
-                }
-
-                // consider to use switch instead of if-else
-                if (gridSpot.Status == GridSpotStatus.Empty)
-                {
-                    Console.Write($" {gridSpot.SpotLetter}{gridSpot.SpotNumber} ");
-                }
-                else if (gridSpot.Status == GridSpotStatus.Hit)
-                {
-                    Console.Write(" X  ");
-                }
-                else if (gridSpot.Status == GridSpotStatus.Miss)
-                {
-                    Console.Write(" O  ");
-                }
-                else
-                {
-                    Console.Write(" ?  ");
-                }
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-        }
 
         private static void WelcomeMessage()
         {
             Console.WriteLine("Welcome to Battleship Lite");
-            Console.WriteLine("created by Nikita Masalov");
+            Console.WriteLine("Created by Nikita Masalov");
             Console.WriteLine();
+            Console.WriteLine("Rules:");
+            Console.WriteLine("1. The game is played on a 5x5 grid (A1 to E5).");
+            Console.WriteLine("2. Each player has 5 ships, and each ship occupies exactly one cell.");
+            Console.WriteLine("3. Players take turns calling out a cell to attack.");
+            Console.WriteLine("4. The goal is to be the first player to hit all 5 of the opponent's ships.");
+            Console.WriteLine("5. The grid markers are as follows:");
+            Console.WriteLine("   - 'o' represents an empty spot.");
+            Console.WriteLine("   - 'x' represents a hit.");
+            Console.WriteLine("   - 'm' represents a miss.");
+            Console.WriteLine("6. The game continues until one player has hit all 5 of the opponent's ships.");
+            Console.WriteLine();
+            Console.WriteLine("Let's start the game!");
+            Console.WriteLine();
+
         }
 
         private static PlayerInfoModel CreatePlayer(string playerTitle)
